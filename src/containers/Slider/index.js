@@ -10,15 +10,34 @@ const Slider = () => {
   const byDateDesc = data?.focus.sort((evtA, evtB) =>
     new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
   );
+
+  // Trie le tableau focus contenu dans l'objet data par date dans l'ordre décroissant. Du plus ancien au plus récent.
+  // Méthode sort avec une fonction de comparaison basée sur les dates
+  // -1 indique que si l'evenetment A est plus ancien que B, il doit etre placé avant le B (evenement le plus récent)
+
   const nextCard = () => {
-    setTimeout(
-      () => setIndex(index < byDateDesc.length ? index + 1 : 0),
-      5000
-    );
+    setIndex((prevIndex) =>
+    prevIndex < byDateDesc.length - 1 ? prevIndex + 1 : 0
+  );
+
+  // NextCard : utilise la fonction setIndex pour mettre à jour l'index.
+    // L'index est incrémenté de 1 s'il est inférieur à la longueur du tableau trié,
+    // sinon il est réinitialisé à 0.
+
   };
-  useEffect(() => {
-    nextCard();
-  });
+  useEffect(
+    () => {
+      const intervalId = setInterval(nextCard, 5000);
+
+      return () => clearInterval(intervalId);
+    },
+    // eslint-disable-next-line
+    [index, byDateDesc]
+    // useEffect : exécute la fonction nextCard toutes les 5 secondes
+    // clearInterval : arrête l'exécution de la fonction nextCard
+    // La dépendance [index, byDateDesc] indique que l'effet doit être réexécuté lorsque l'une de ces valeurs change.
+  );
+
   return (
     <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
@@ -40,13 +59,17 @@ const Slider = () => {
           </div>
           <div className="SlideCard__paginationContainer">
             <div className="SlideCard__pagination">
-              {byDateDesc.map((_, radioIdx) => (
-                <input
-                  key={`${event.id}`}
-                  type="radio"
-                  name="radio-button"
-                  checked={idx === radioIdx}
+              {byDateDesc.map((eventItem, radioIdx) => (
+                <label key={eventItem.id} htmlFor={`radio-${eventItem.id}`} className="point">
+                  <input
+                    id={`radio-${eventItem.id}`}
+                    type="radio"
+                    name="radio-button"
+                    checked={index === radioIdx}
+                    onChange={() => setIndex(radioIdx)}
                 />
+                <span className={`indicator ${index === radioIdx ? 'active' : ''}`} />  
+                </label>
               ))}
             </div>
           </div>
@@ -55,5 +78,6 @@ const Slider = () => {
     </div>
   );
 };
+
 
 export default Slider;
