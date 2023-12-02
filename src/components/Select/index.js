@@ -92,7 +92,7 @@ Select.propTypes = {
 
 Select.defaultProps = {
   onChange: () => null,
-  titleEmpty: false,
+  titleEmpty: true,
   label: "",
   type: "normal",
   name: "select",
