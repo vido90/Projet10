@@ -14,33 +14,26 @@ const EventList = () => {
   const [type, setType] = useState();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredEvents = (
-    (!type
-      ? data?.events
-      // Ajout filter en fonction du type ( code avant modif -:data?.events) || []-)
-      : data?.events.filter((event) => event.type === type)) || []
-  )
+  const typeList = Array.from(new Set(data?.events.map((event) => event.type)));
 
-    // vérifier si la variable type est définie. Si type n'est pas défini (!type est vrai),
-    // Tous les événements (data?.events) sont renvoyés.
-    // Sinon, les événements sont filtrés pour inclure uniquement ceux dont le type correspond à la valeur de type.
+  const filteredEventsByType = type
+    ? data?.events.filter((event) => event.type === type)
+    : data?.events || [];
 
-  .filter((event, index) => {
-    if (
-      (currentPage - 1) * PER_PAGE <= index &&
-      PER_PAGE * currentPage > index
-    ) {
-      return true;
-    }
-    return false;
-  });
+    const indexOfLastEvent = currentPage * PER_PAGE;
+    const indexOfFirstEvent = indexOfLastEvent - PER_PAGE;
+    const paginatedEvents = filteredEventsByType.slice(
+      indexOfFirstEvent,
+      indexOfLastEvent
+    );
 
-  const changeType = (evtType) => {
-    setCurrentPage(1);
-    setType(evtType);
-  };
-  const pageNumber = Math.floor((filteredEvents?.length || 0) / PER_PAGE) + 1;
-  const typeList = new Set(data?.events.map((event) => event.type));
+    const changeType = (evtType) => {
+      setCurrentPage(1);
+      setType(evtType);
+    };
+
+    const pageNumber = Math.ceil(filteredEventsByType.length / PER_PAGE);
+
   return (
     <>
       {error && <div>An error occured</div>}
@@ -54,8 +47,8 @@ const EventList = () => {
             onChange={(value) => (value ? changeType(value) : changeType(null))}
             titleEmpty
           />
-          <div id="events" className="ListContainer">
-            {filteredEvents.map((event) => (
+           <div id="events" className="ListContainer">
+              {paginatedEvents.map((event) => (
               <Modal key={event.id} Content={<ModalEvent event={event} />}>
                 {({ setIsOpened }) => (
                   <EventCard
