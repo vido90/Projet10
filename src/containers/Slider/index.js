@@ -5,79 +5,70 @@ import { getMonth } from "../../helpers/Date";
 import "./style.scss";
 
 const Slider = () => {
-  const { data } = useData();
-  const [index, setIndex] = useState(0);
-  const byDateDesc = data?.focus.sort((evtA, evtB) =>
-    new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
-  );
+  const { data } = useData(); // Obtient les données via le contexte DataContext
+  const [index, setIndex] = useState(0); // Gère l'index de la carte affichée dans le slider
+    
+  // Effet pour gérer le changement automatique des cartes toutes les 5 secondes
 
-  // Trie le tableau focus contenu dans l'objet data par date dans l'ordre décroissant. Du plus ancien au plus récent.
-  // Méthode sort avec une fonction de comparaison basée sur les dates
-  // -1 indique que si l'evenetment A est plus ancien que B, il doit etre placé avant le B (evenement le plus récent)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      // Incrémente l'index pour afficher la carte suivante
+      setIndex((prevIndex) =>
+        prevIndex < (data?.focus?.length || 0) - 1 ? prevIndex + 1 : 0
+      );
+    }, 5000);
 
-  const nextCard = () => {
-    setIndex((prevIndex) =>
-    prevIndex < byDateDesc.length - 1 ? prevIndex + 1 : 0
-  );
+    return () => {
+      clearInterval(timer); // Nettoie le timer lorsque le composant est démonté ou lorsque les données changent 
+    };
+  }, [data]);
 
-  // NextCard : utilise la fonction setIndex pour mettre à jour l'index.
-    // L'index est incrémenté de 1 s'il est inférieur à la longueur du tableau trié,
-    // sinon il est réinitialisé à 0.
-
-  };
-  useEffect(
-    () => {
-      const intervalId = setInterval(nextCard, 5000);
-
-      return () => clearInterval(intervalId);
-    },
-    // eslint-disable-next-line
-    [index, byDateDesc]
-    // useEffect : exécute la fonction nextCard toutes les 5 secondes
-    // clearInterval : arrête l'exécution de la fonction nextCard
-    // La dépendance [index, byDateDesc] indique que l'effet doit être réexécuté lorsque l'une de ces valeurs change.
-  );
+  // Trie les événements par date décroissante pour afficher le plus récent en premier
+  const eventsSortedByDate = data?.focus.sort((evtA, evtB) => {
+    const dateA = new Date(evtA.date);
+    const dateB = new Date(evtB.date);
+    return dateB - dateA;
+  });
 
   return (
     <div className="SlideCardList">
-      {byDateDesc?.map((event, idx) => (
-        <>
-          <div
-            key={event.title}
-            className={`SlideCard SlideCard--${
-              index === idx ? "display" : "hide"
-            }`}
-          >
+      {/* Map les événements triés pour afficher les cartes */}
+      {eventsSortedByDate?.map((event, idx) => (
+        <div
+          key={event.title}
+          className={`SlideCard SlideCard--${
+            index === idx ? "display" : "hide"
+          }`}
+        >
             <img src={event.cover} alt="forum" />
-            <div className="SlideCard__descriptionContainer">
-              <div className="SlideCard__description">
-                <h3>{event.title}</h3>
-                <p>{event.description}</p>
-                <div>{getMonth(new Date(event.date))}</div>
-              </div>
+          <div className="SlideCard__descriptionContainer">
+            <div className="SlideCard__description">
+              <h3>{event.title}</h3>
+              <p>{event.description}</p>
+              <div>{getMonth(new Date(event.date))}</div> {/* Affiche le mois à partir de la date */}
             </div>
           </div>
-          <div className="SlideCard__paginationContainer">
-            <div className="SlideCard__pagination">
-              {byDateDesc.map((eventItem, radioIdx) => (
-                <label key={eventItem.id} htmlFor={`radio-${eventItem.id}`} className="point">
-                  <input
-                    id={`radio-${eventItem.id}`}
-                    type="radio"
-                    name="radio-button"
-                    checked={index === radioIdx}
-                    onChange={() => setIndex(radioIdx)}
-                />
-                <span className={`indicator ${index === radioIdx ? 'active' : ''}`} />  
-                </label>
-              ))}
-            </div>
-          </div>
-        </>
+        </div>
       ))}
+      {/* Crée la pagination sous forme de radio buttons pour naviguer entre les cartes */}
+      <div className="SlideCard__paginationContainer">
+        <div className="SlideCard__pagination">
+          {eventsSortedByDate?.map((eventItem, radioIdx) => (
+            <label key={eventItem.id} htmlFor={`radio-${eventItem.id}`} className="point">
+              <input
+                id={`radio-${eventItem.id}`}
+                type="radio"
+                name="radio-button"
+                checked={index === radioIdx}
+                onChange={() => setIndex(radioIdx)}
+              />
+              <span className={`indicator ${index === radioIdx ? 'active' : ''}`} />  
+            </label>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
-
 
 export default Slider;

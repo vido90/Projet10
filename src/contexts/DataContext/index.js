@@ -27,9 +27,13 @@ export const DataProvider = ({ children }) => {
     }
   }, []);
   useEffect(() => {
-    if (data) return;
-    getData();
-  });
+    // verifie si data est vide ou non 
+    if (!data) {
+      // si data est vide, appelle detData() pour charger les données 
+      getData();
+    };
+    
+  }, [data, getData]); // ce useEffect s'exécutera à chaque changement dans data ou getData
   
   return (
     <DataContext.Provider
