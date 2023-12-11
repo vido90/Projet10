@@ -17,8 +17,15 @@ const Page = () => {
   // const qui vient chercher la dernière prestation
   const last = 
     data && data.events && data.events.length > 0 // Vérification des données pour éviter les erreurs 
-    ? data.events[data.events.length - 1] // si les évènements existent, récupère le dernier évènement
-    : null; // dinon déclare last comme null
+    ? data.events.reduce((latest, current) => {
+      // utilisation de reduce() pour comparer les dates des évènements et trouver le plus récent
+      const latestDate = new Date(latest.date); // Conversion de la date de la prestation la plus récente en objet Date
+      const currentDate = new Date(current.date); // Conversion de la date de l'évènement actuel en objet Date
+      
+      // comparaison des dates pour trouver la prestation la plus récente
+      return currentDate > latestDate ? current : latest; 
+    }) 
+    : null; // Si aucune donnée n'est disponible, last est déclaré comme null
 
   return <>
     <header>
