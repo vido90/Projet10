@@ -45,7 +45,8 @@ const Slider = () => {
             <div className="SlideCard__description">
               <h3>{event.title}</h3>
               <p>{event.description}</p>
-              <div>{getMonth(new Date(event.date))}</div> {/* Affiche le mois à partir de la date */}
+              <div>
+                {getMonth(new Date(event.date))}</div> {/* Affiche le mois à partir de la date */}
             </div>
           </div>
         </div>

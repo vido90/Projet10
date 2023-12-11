@@ -13,4 +13,7 @@ export const MONTHS = {
   12: "décembre",
 };
 
-export const getMonth = (date) => MONTHS[date.getMonth()];
+// Une fonction qui prend une date en argument et retourne le nom du mois correspondant
+
+export const getMonth = (date) => MONTHS[date.getMonth() + 1];
+
