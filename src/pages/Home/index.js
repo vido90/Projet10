@@ -13,7 +13,7 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  const { data } = useData() // récupère les données à partir du contexte 
+  const { data } = useData() // récupère les données à partir du contexte
   // const qui vient chercher la dernière prestation
   const last = 
     data && data.events && data.events.length > 0 // Vérification des données pour éviter les erreurs 

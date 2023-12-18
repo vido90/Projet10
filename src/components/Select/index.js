@@ -32,12 +32,10 @@ const Select = ({
           </li>
           {!collapsed && (
             <>
-              {!titleEmpty && (
                 <li onClick={() => changeValue(null)}>
-                  <input defaultChecked={!value} name="selected" type="radio" />{" "}
+                  <input defaultChecked={!value} name="selected" type="radio" />
                   Toutes
                 </li>
-              )}
               {selection.map((s) => (
                 <li key={s} onClick={() => changeValue(s)}>
                   <input
